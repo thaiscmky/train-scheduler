@@ -17,11 +17,10 @@ function setupParentNode(){
     });
 }
 function addTrain(train){
-    var trainame = utils.varescape(train.name);
-    database.ref(`trains/${trainame}`).once("value", snapshot => {
+    database.ref(`trains/${train.name}`).once("value", snapshot => {
         const dbtrain = snapshot.val();
         if (!dbtrain)
-            database.ref(`trains`).child(trainame).set(convertObj2Data(train));
+            database.ref(`trains`).child(train.name).set(convertObj2Data(train));
     });
 }
 function convertObj2Data(train){
@@ -32,15 +31,37 @@ function convertObj2Data(train){
     };
 }
 
-$(document).ready(function(){
-
-    var trainobj = {
-        name: 'Dummy Test',
-        destination: '77077',
-        startime: '03:00',
-        frequency: '3'
-    };
-    setupParentNode();
+function formatUserData(formdata){
+    var trainobj = formdata;
+    //http://momentjs.com/docs/#/displaying/
+    //Non-unix e.g. format 2018-03-15T01:30:00-05:00 DATE|T|TIME-TIMEZONE
+    console.log(moment(trainobj.startime, 'HH:mm A').format());
+    trainobj.startime = moment(trainobj.startime, 'HH:mm A').format('X'); //add fix for date set in the past later
+    trainobj.name = utils.varescape(trainobj.name);
     //addTrain(trainobj);
+    calcMinutes(trainobj);
+    var nextarrival;
+    var minutesaway;
+}
 
+function calcMinutes(train){
+
+    var difference = moment().diff(moment.unix(train.startime), 'minutes'); // positive if in past, negative if in future
+    var minutesAway = train.frequency - difference % train.frequency;
+    var nextArrival = moment().add(minutesAway, "m").format("hh:mm: A");
+    console.log(minutesAway, nextArrival);
+
+}
+
+$(document).ready(function(){
+    setupParentNode();
+    $('#newtrain').submit(function(e) {
+        e.preventDefault();
+        var formdata = {};
+        $.each($(this).serializeArray(), function(i,v){
+            if(v.value) formdata[v.name] = isNaN(v.value.trim()) ? v.value : parseInt(v.value);
+        });
+        console.log(formdata);
+        formatUserData(formdata);
+    });
 });
