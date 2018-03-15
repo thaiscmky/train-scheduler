@@ -1,5 +1,4 @@
 var database = firebase.database();
-
 var utils = {
   varescape: function(str){
       return str.replace(/[^\w\s]/gi, '').replace(/\s/g, '_').toLowerCase();
@@ -20,8 +19,11 @@ function setupParentNode(){
 function addTrain(train){
     database.ref(`trains/${train.name}`).once("value", snapshot => {
         const dbtrain = snapshot.val();
-        if (!dbtrain)
-            database.ref(`trains`).child(train.name).set(convertObj2Data(train));
+        if (!dbtrain) {
+            var data = convertObj2Data(train);
+            database.ref(`trains`).child(train.name).set(data);
+            displayTrain(train.name, data);
+        }
     });
 }
 function convertObj2Data(train){
@@ -37,7 +39,6 @@ function formatUserData(formdata){
     trainobj.startime = moment(trainobj.startime, 'HH:mm A').format('X');
     trainobj.name = utils.varescape(trainobj.name);
     addTrain(trainobj);
-    displayTrains();
 }
 
 function calcMinutes(train){
@@ -67,21 +68,25 @@ function displayRow(train)
     $('#trains').append($tr);
 }
 
-function displayTrains(){
-    database.ref().on('child_added', function (snapshot, prevChildKey) {
-        if(snapshot.val() !== null){
-            var train = $.extend({'name': Object.keys(snapshot.val())[0]}, snapshot.val()[Object.keys(snapshot.val())[0]]);
-            if(train.destination)
-                displayRow(train);
-        }
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
+function displayTrain(train, values){
+        var traindisplay = $.extend({'name': train}, values);
+        displayRow(traindisplay);
+}
+
+function getAllTrains() {
+    database.ref(`trains`).once("value", function(snapshot){
+        $.each(snapshot.val(), function(key, value){
+            displayTrain(key, value);
+        });
     });
 }
 
 $(document).ready(function(){
     setupParentNode();
-    displayTrains();
+    getAllTrains();
+    var statusUpdate = setInterval(function() {
+        // your code goes here...
+    }, 60 * 1000);
     $('#newtrain').submit(function(e) {
         e.preventDefault();
         var formdata = {};
