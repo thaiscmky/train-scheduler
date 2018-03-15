@@ -20,10 +20,6 @@
     <div class="jumbotron">
         <h1 class="text-center">Train Scheduler</h1>
     </div>
-    <!--<div class="row mt-4" id="nytresult">
-        <h2 class="col-12">Top Articles</h2>
-        <hr class="col-12"/>
-    </div>-->
     <table class="table table-striped">
         <thead>
         <tr>
@@ -42,6 +38,25 @@
         <div class="col-12">
             <fieldset class="row">
                 <legend class="col-12">Add Train</legend>
+                <div class="form-group">
+                    <label for="name" class="col-4 col-form-label justify-content-start">Train Name</label>
+                    <input type="text" class="col-8 form-control" id="name" name="name" required="true">
+                </div>
+                <div class="form-group">
+                    <label for="destination" class="col-4 col-form-label justify-content-start">Destination Zipcode</label>
+                    <input type="text" class="col-8 form-control" id="destination" name="destination" pattern="[0-9]{5}" title="Enter 5 digit zip code" required="true">
+                </div>
+                <div class="form-group">
+                    <label for="startime" class="col-4 col-form-label justify-content-start">First train time (HH:mm - military time)</label>
+                    <input type="text" class="col-8 form-control" id="startime" name="startime" pattern="(?:[01]|2(?![4-9])){1}\d{1}:[0-5]{1}\d" title="Enter in military format" placeholder="00:00" required="true">
+                </div>
+                <div class="form-group">
+                    <label for="frequency" class="col-4 col-form-label justify-content-start">Frequency in minutes</label>
+                    <input type="number" step="1" class="col-8 form-control" id="frequency" name="frequency" required="true">
+                </div>
+                <div class="form-group m-5">
+                    <button type="submit" class="btn btn-primary btn-lg col-5 mr-auto">Submit</button>
+                </div>
             </fieldset>
         </div>
     </form>

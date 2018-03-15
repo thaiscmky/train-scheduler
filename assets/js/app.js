@@ -41,6 +41,6 @@ $(document).ready(function(){
         frequency: '3'
     };
     setupParentNode();
-    addTrain(trainobj);
+    //addTrain(trainobj);
 
 });
