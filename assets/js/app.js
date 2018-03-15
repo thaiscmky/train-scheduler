@@ -84,9 +84,6 @@ function getAllTrains() {
 $(document).ready(function(){
     setupParentNode();
     getAllTrains();
-    var statusUpdate = setInterval(function() {
-        // your code goes here...
-    }, 60 * 1000);
     $('#newtrain').submit(function(e) {
         e.preventDefault();
         var formdata = {};
